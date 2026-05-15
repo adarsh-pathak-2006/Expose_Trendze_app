@@ -61,6 +61,84 @@ CREATE TABLE public.order_stages (
   UNIQUE (order_id, stage_number)
 );
 
+CREATE OR REPLACE FUNCTION public.handle_new_auth_user()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  user_role TEXT;
+  user_name TEXT;
+BEGIN
+  user_role := lower(coalesce(new.raw_app_meta_data ->> 'role', new.raw_user_meta_data ->> 'role', 'customer'));
+  user_name := coalesce(new.raw_user_meta_data ->> 'full_name', split_part(coalesce(new.email, ''), '@', 1));
+
+  IF user_role = 'admin' THEN
+    INSERT INTO public.admins (
+      user_id,
+      full_name,
+      email,
+      phone,
+      is_active,
+      updated_at
+    )
+    VALUES (
+      new.id,
+      user_name,
+      new.email,
+      new.raw_user_meta_data ->> 'phone',
+      true,
+      now()
+    )
+    ON CONFLICT (user_id) DO UPDATE
+    SET
+      full_name = EXCLUDED.full_name,
+      email = EXCLUDED.email,
+      phone = EXCLUDED.phone,
+      updated_at = now();
+  ELSE
+    INSERT INTO public.customers (
+      user_id,
+      full_name,
+      email,
+      phone,
+      company_name,
+      country,
+      is_active,
+      updated_at
+    )
+    VALUES (
+      new.id,
+      user_name,
+      new.email,
+      new.raw_user_meta_data ->> 'phone',
+      new.raw_user_meta_data ->> 'company_name',
+      new.raw_user_meta_data ->> 'country',
+      true,
+      now()
+    )
+    ON CONFLICT (user_id) DO UPDATE
+    SET
+      full_name = EXCLUDED.full_name,
+      email = EXCLUDED.email,
+      phone = EXCLUDED.phone,
+      company_name = EXCLUDED.company_name,
+      country = EXCLUDED.country,
+      updated_at = now();
+  END IF;
+
+  RETURN new;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.handle_new_auth_user();
+
 ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admins ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
