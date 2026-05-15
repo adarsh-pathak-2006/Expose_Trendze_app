@@ -132,6 +132,20 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION public.is_admin_user(check_user_id UUID DEFAULT null)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  select exists (
+    select 1
+    from public.admins
+    where user_id = coalesce(check_user_id, auth.uid())
+      and is_active = true
+  );
+$$;
+
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 
 CREATE TRIGGER on_auth_user_created
@@ -180,101 +194,51 @@ CREATE POLICY "order_stages_own" ON public.order_stages
 
 CREATE POLICY "admins_read_customers" ON public.customers
   FOR SELECT TO authenticated USING (
-    exists (
-      select 1
-      from public.admins a
-      where a.user_id = (select auth.uid())
-        and a.is_active = true
-    )
+    public.is_admin_user()
   );
 
 CREATE POLICY "admins_read_admins" ON public.admins
   FOR SELECT TO authenticated USING (
-    exists (
-      select 1
-      from public.admins a
-      where a.user_id = (select auth.uid())
-        and a.is_active = true
-    )
+    public.is_admin_user()
   );
 
 CREATE POLICY "admins_read_orders" ON public.orders
   FOR SELECT TO authenticated USING (
-    exists (
-      select 1
-      from public.admins a
-      where a.user_id = (select auth.uid())
-        and a.is_active = true
-    )
+    public.is_admin_user()
   );
 
 CREATE POLICY "admins_update_orders" ON public.orders
   FOR UPDATE TO authenticated
   USING (
-    exists (
-      select 1
-      from public.admins a
-      where a.user_id = (select auth.uid())
-        and a.is_active = true
-    )
+    public.is_admin_user()
   )
   WITH CHECK (
-    exists (
-      select 1
-      from public.admins a
-      where a.user_id = (select auth.uid())
-        and a.is_active = true
-    )
+    public.is_admin_user()
   );
 
 CREATE POLICY "admins_read_items" ON public.order_items
   FOR SELECT TO authenticated USING (
-    exists (
-      select 1
-      from public.admins a
-      where a.user_id = (select auth.uid())
-        and a.is_active = true
-    )
+    public.is_admin_user()
   );
 
 CREATE POLICY "admins_read_stages" ON public.order_stages
   FOR SELECT TO authenticated USING (
-    exists (
-      select 1
-      from public.admins a
-      where a.user_id = (select auth.uid())
-        and a.is_active = true
-    )
+    public.is_admin_user()
   );
 
 CREATE POLICY "admins_upsert_stages" ON public.order_stages
   FOR INSERT TO authenticated
   WITH CHECK (
-    exists (
-      select 1
-      from public.admins a
-      where a.user_id = (select auth.uid())
-        and a.is_active = true
-    )
+    public.is_admin_user()
   );
 
 CREATE POLICY "admins_update_stages" ON public.order_stages
   FOR UPDATE TO authenticated
   USING (
-    exists (
-      select 1
-      from public.admins a
-      where a.user_id = (select auth.uid())
-        and a.is_active = true
-    )
+    public.is_admin_user()
   )
   WITH CHECK (
-    exists (
-      select 1
-      from public.admins a
-      where a.user_id = (select auth.uid())
-        and a.is_active = true
-    )
+    public.is_admin_user()
   );
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;

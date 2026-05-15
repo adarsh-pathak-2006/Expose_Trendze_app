@@ -16,5 +16,6 @@ export type MainTabParamList = {
 export type AdminTabParamList = {
   AdminHome: undefined;
   AdminOrders: undefined;
+  AdminUsers: undefined;
   Profile: undefined;
 };

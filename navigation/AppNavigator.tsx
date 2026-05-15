@@ -10,6 +10,7 @@ import type { AdminTabParamList, MainTabParamList, RootStackParamList } from '..
 import { AdminHomeScreen } from '../screens/AdminHomeScreen';
 import { AdminOrderControlScreen } from '../screens/AdminOrderControlScreen';
 import { AdminOrdersScreen } from '../screens/AdminOrdersScreen';
+import { AdminUsersScreen } from '../screens/AdminUsersScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { LoginScreen } from '../screens/LoginScreen';
 import { OrderDetailScreen } from '../screens/OrderDetailScreen';
@@ -101,6 +102,14 @@ function AdminTabsNavigator() {
         options={{
           title: 'Orders',
           tabBarIcon: ({ color, size }) => <MaterialCommunityIcons color={color} name="clipboard-edit-outline" size={size} />,
+        }}
+      />
+      <AdminTabs.Screen
+        component={AdminUsersScreen}
+        name="AdminUsers"
+        options={{
+          title: 'Users',
+          tabBarIcon: ({ color, size }) => <MaterialCommunityIcons color={color} name="account-plus-outline" size={size} />,
         }}
       />
       <AdminTabs.Screen

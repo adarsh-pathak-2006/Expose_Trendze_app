@@ -3,5 +3,5 @@
   "compilerOptions": {
     "strict": true
   },
-  "exclude": ["claude_reference", "_expo_scaffold"]
+  "exclude": ["claude_reference", "_expo_scaffold", "supabase/functions"]
 }
