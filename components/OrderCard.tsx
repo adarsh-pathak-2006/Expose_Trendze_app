@@ -17,10 +17,12 @@ function accentColor(status: string) {
 type Props = {
   order: Order;
   onPress?: () => void;
+  showCustomer?: boolean;
 };
 
-export function OrderCard({ order, onPress }: Props) {
+export function OrderCard({ order, onPress, showCustomer = false }: Props) {
   const productName = order.items[0]?.productName ?? 'Order item';
+  const customerLabel = order.customer?.companyName ?? order.customer?.fullName ?? order.customer?.email;
 
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
@@ -29,6 +31,7 @@ export function OrderCard({ order, onPress }: Props) {
         <View style={styles.headerRow}>
           <View style={styles.headerText}>
             <Text style={styles.product}>{productName}</Text>
+            {showCustomer && customerLabel ? <Text style={styles.customer}>{customerLabel}</Text> : null}
             <Text style={styles.date}>Updated {formatDateTime(order.updatedAt ?? order.placedAt)}</Text>
           </View>
           <Text style={styles.code}>{order.orderNumber}</Text>
@@ -83,6 +86,11 @@ const styles = StyleSheet.create({
   date: {
     color: COLORS.textSecondary,
     fontFamily: FONTS.body,
+    fontSize: 12,
+  },
+  customer: {
+    color: COLORS.accent,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 12,
   },
   code: {

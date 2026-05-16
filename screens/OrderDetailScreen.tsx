@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -5,14 +6,60 @@ import { PrimaryButton } from '../components/PrimaryButton';
 import { ScreenShell } from '../components/ScreenShell';
 import { StatusBadge } from '../components/StatusBadge';
 import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
+import { fetchOrderById } from '../services/orders';
 import { useOrdersStore } from '../store/ordersStore';
+import type { Order } from '../types/order';
 import type { RootStackParamList } from '../types/navigation';
 import { formatCurrency, formatDate } from '../utils/format';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OrderDetail'>;
 
 export function OrderDetailScreen({ navigation, route }: Props) {
-  const order = useOrdersStore((state) => state.getOrderById(route.params.orderId));
+  const orderFromStore = useOrdersStore((state) => state.getOrderById(route.params.orderId));
+  const [order, setOrder] = useState<Order | undefined>(orderFromStore);
+  const [isLoading, setIsLoading] = useState(!orderFromStore);
+
+  useEffect(() => {
+    setOrder(orderFromStore);
+    if (orderFromStore) {
+      setIsLoading(false);
+    }
+  }, [orderFromStore]);
+
+  useEffect(() => {
+    if (orderFromStore) {
+      return;
+    }
+
+    let isMounted = true;
+
+    async function loadOrder() {
+      try {
+        const fetchedOrder = await fetchOrderById(route.params.orderId);
+        if (isMounted) {
+          setOrder(fetchedOrder);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadOrder();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [orderFromStore, route.params.orderId]);
+
+  if (isLoading) {
+    return (
+      <ScreenShell>
+        <Text style={styles.empty}>Loading order...</Text>
+      </ScreenShell>
+    );
+  }
 
   if (!order) {
     return (

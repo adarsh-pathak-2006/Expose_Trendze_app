@@ -47,6 +47,7 @@ export function AdminHomeScreen() {
             key={order.id}
             onPress={() => navigation.navigate('AdminOrderControl', { orderId: order.id })}
             order={order}
+            showCustomer
           />
         ))}
       </View>

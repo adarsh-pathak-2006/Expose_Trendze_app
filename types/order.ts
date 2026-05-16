@@ -32,6 +32,12 @@ export type Order = {
   expectedDelivery?: string;
   placedAt: string;
   updatedAt?: string;
+  customer?: {
+    id: string;
+    fullName: string;
+    email: string;
+    companyName?: string;
+  };
   items: OrderItem[];
   stages: OrderStage[];
 };

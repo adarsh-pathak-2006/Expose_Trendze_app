@@ -98,40 +98,50 @@ Deno.serve(async (request) => {
 
     const userId = createdUserData.user.id;
 
-    if (role === 'admin') {
-      const { error: profileError } = await adminClient.from('admins').upsert(
-        {
-          user_id: userId,
-          full_name: fullName,
-          email,
-          phone,
-          is_active: true,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id' },
-      );
+    try {
+      if (role === 'admin') {
+        const { error: profileError } = await adminClient.from('admins').upsert(
+          {
+            user_id: userId,
+            full_name: fullName,
+            email,
+            phone,
+            is_active: true,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' },
+        );
 
-      if (profileError) {
-        return jsonResponse({ error: profileError.message }, 400);
-      }
-    } else {
-      const { error: profileError } = await adminClient.from('customers').upsert(
-        {
-          user_id: userId,
-          full_name: fullName,
-          email,
-          phone,
-          company_name: companyName,
-          country,
-          is_active: true,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id' },
-      );
+        if (profileError) {
+          throw new Error(profileError.message);
+        }
+      } else {
+        const { error: profileError } = await adminClient.from('customers').upsert(
+          {
+            user_id: userId,
+            full_name: fullName,
+            email,
+            phone,
+            company_name: companyName,
+            country,
+            is_active: true,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' },
+        );
 
-      if (profileError) {
-        return jsonResponse({ error: profileError.message }, 400);
+        if (profileError) {
+          throw new Error(profileError.message);
+        }
       }
+    } catch (error) {
+      await adminClient.auth.admin.deleteUser(userId);
+      return jsonResponse(
+        {
+          error: error instanceof Error ? error.message : 'Unable to create the profile record.',
+        },
+        400,
+      );
     }
 
     return jsonResponse({

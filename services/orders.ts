@@ -40,6 +40,14 @@ function normalizeOrder(order: any): Order {
     expectedDelivery: order.expected_delivery ?? undefined,
     placedAt: order.placed_at,
     updatedAt: order.updated_at ?? undefined,
+    customer: order.customers
+      ? {
+          id: order.customers.id,
+          fullName: order.customers.full_name,
+          email: order.customers.email,
+          companyName: order.customers.company_name ?? undefined,
+        }
+      : undefined,
     items: (order.order_items ?? []).map((item: any) => ({
       id: item.id,
       productName: item.product_name,
@@ -53,36 +61,7 @@ function normalizeOrder(order: any): Order {
   };
 }
 
-export async function fetchOrders(): Promise<Order[]> {
-  if (!hasSupabaseConfig || !supabase) {
-    return getDemoOrders();
-  }
-
-  const { data, error } = await supabase
-    .from('orders')
-    .select(
-      'id, customer_id, order_number, status, total_amount, currency, payment_status, expected_delivery, placed_at, updated_at, order_items(*), order_stages(*)',
-    )
-    .order('placed_at', { ascending: false });
-
-  if (error) {
-    throw error;
-  }
-
-  return (data ?? []).map(normalizeOrder);
-}
-
-export async function fetchOrderById(orderId: string): Promise<Order | undefined> {
-  const orders = await fetchOrders();
-  return orders.find((order) => order.id === orderId);
-}
-
-export async function fetchDashboardSummary(): Promise<DashboardSummary> {
-  if (!hasSupabaseConfig || !supabase) {
-    return mockDashboardSummary;
-  }
-
-  const orders = await fetchOrders();
+export function buildDashboardSummary(orders: Order[]): DashboardSummary {
   const recentUpdates = orders
     .flatMap((order) =>
       order.stages
@@ -105,6 +84,54 @@ export async function fetchDashboardSummary(): Promise<DashboardSummary> {
   };
 }
 
+export async function fetchOrders(): Promise<Order[]> {
+  if (!hasSupabaseConfig || !supabase) {
+    return getDemoOrders();
+  }
+
+  const { data, error } = await supabase
+    .from('orders')
+    .select(
+      'id, customer_id, order_number, status, total_amount, currency, payment_status, expected_delivery, placed_at, updated_at, customers(id, full_name, email, company_name), order_items(*), order_stages(*)',
+    )
+    .order('placed_at', { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map(normalizeOrder);
+}
+
+export async function fetchOrderById(orderId: string): Promise<Order | undefined> {
+  if (!hasSupabaseConfig || !supabase) {
+    return getDemoOrders().find((order) => order.id === orderId);
+  }
+
+  const { data, error } = await supabase
+    .from('orders')
+    .select(
+      'id, customer_id, order_number, status, total_amount, currency, payment_status, expected_delivery, placed_at, updated_at, customers(id, full_name, email, company_name), order_items(*), order_stages(*)',
+    )
+    .eq('id', orderId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data ? normalizeOrder(data) : undefined;
+}
+
+export async function fetchDashboardSummary(): Promise<DashboardSummary> {
+  if (!hasSupabaseConfig || !supabase) {
+    return mockDashboardSummary;
+  }
+
+  const orders = await fetchOrders();
+  return buildDashboardSummary(orders);
+}
+
 export async function updateOrderStage(orderId: string, stageNumber: number, stageNote?: string) {
   if (!hasSupabaseConfig || !supabase) {
     updateDemoOrderStage(orderId, stageNumber, stageNote);
@@ -116,32 +143,22 @@ export async function updateOrderStage(orderId: string, stageNumber: number, sta
     throw new Error('Invalid stage number.');
   }
 
-  const { error: insertError } = await supabase.from('order_stages').upsert(
-    {
-      order_id: orderId,
-      stage_number: stageNumber,
-      stage_name: stageName,
-      stage_note: stageNote || null,
-      is_completed: true,
-      completed_at: new Date().toISOString(),
-    },
-    { onConflict: 'order_id,stage_number' },
-  );
+  const {
+    data,
+    error,
+  } = await supabase.rpc('update_order_stage', {
+    target_order_id: orderId,
+    target_stage_number: stageNumber,
+    target_stage_note: stageNote ?? null,
+    updated_by_label: 'admin-panel',
+  });
 
-  if (insertError) {
-    throw insertError;
+  if (error) {
+    throw error;
   }
 
-  const { error: updateError } = await supabase
-    .from('orders')
-    .update({
-      status: stageName,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', orderId);
-
-  if (updateError) {
-    throw updateError;
+  if (!data) {
+    throw new Error('Order stage update did not return a result.');
   }
 }
 

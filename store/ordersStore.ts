@@ -23,10 +23,8 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
   fetchAll: async () => {
     set({ isLoading: true, error: null });
     try {
-      const [orders, dashboard] = await Promise.all([
-        orderService.fetchOrders(),
-        orderService.fetchDashboardSummary(),
-      ]);
+      const orders = await orderService.fetchOrders();
+      const dashboard = orderService.buildDashboardSummary(orders);
 
       set({ orders, dashboard, isLoading: false });
     } catch (error) {
@@ -40,10 +38,8 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
     set({ isUpdating: true, error: null });
     try {
       await orderService.updateOrderStage(orderId, stageNumber, stageNote);
-      const [orders, dashboard] = await Promise.all([
-        orderService.fetchOrders(),
-        orderService.fetchDashboardSummary(),
-      ]);
+      const orders = await orderService.fetchOrders();
+      const dashboard = orderService.buildDashboardSummary(orders);
       set({ orders, dashboard, isUpdating: false });
     } catch (error) {
       set({

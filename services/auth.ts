@@ -104,14 +104,32 @@ export async function fetchProfile(expectedRole?: AppRole): Promise<UserProfile>
     throw new Error('No active session found.');
   }
 
-  const { data: adminData, error: adminLookupError } = await supabase
-    .from('admins')
-    .select('id, user_id, full_name, email, phone, is_active')
-    .eq('user_id', userId)
-    .maybeSingle();
+  const [
+    { data: adminData, error: adminLookupError },
+    { data: customerData, error: customerLookupError },
+  ] = await Promise.all([
+    supabase
+      .from('admins')
+      .select('id, user_id, full_name, email, phone, is_active')
+      .eq('user_id', userId)
+      .maybeSingle(),
+    supabase
+      .from('customers')
+      .select('id, user_id, full_name, email, phone, company_name, country, is_active')
+      .eq('user_id', userId)
+      .maybeSingle(),
+  ]);
 
   if (adminLookupError) {
     throw adminLookupError;
+  }
+
+  if (customerLookupError) {
+    throw customerLookupError;
+  }
+
+  if (adminData && customerData) {
+    throw new Error('This auth user is linked to both admin and customer profiles. Resolve the data conflict first.');
   }
 
   if (adminData) {
@@ -131,17 +149,7 @@ export async function fetchProfile(expectedRole?: AppRole): Promise<UserProfile>
     };
   }
 
-  const { data, error } = await supabase
-    .from('customers')
-    .select('id, user_id, full_name, email, phone, company_name, country, is_active')
-    .eq('user_id', userId)
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  if (!data) {
+  if (!customerData) {
     throw new Error(
       expectedRole === 'admin'
         ? 'This auth user is not linked in the admins table.'
@@ -154,14 +162,14 @@ export async function fetchProfile(expectedRole?: AppRole): Promise<UserProfile>
   }
 
   return {
-    id: data.id,
-    userId: data.user_id,
-    fullName: data.full_name,
-    email: data.email,
+    id: customerData.id,
+    userId: customerData.user_id,
+    fullName: customerData.full_name,
+    email: customerData.email,
     role: 'customer',
-    phone: data.phone ?? undefined,
-    companyName: data.company_name ?? undefined,
-    country: data.country ?? undefined,
-    isActive: data.is_active,
+    phone: customerData.phone ?? undefined,
+    companyName: customerData.company_name ?? undefined,
+    country: customerData.country ?? undefined,
+    isActive: customerData.is_active,
   };
 }
