@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import { BrandHeader } from '../components/BrandHeader';
@@ -13,6 +13,7 @@ import { hasSupabaseConfig } from '../services/supabase';
 import { useAuthStore } from '../store/authStore';
 
 export function LoginScreen() {
+  const { width } = useWindowDimensions();
   const login = useAuthStore((state) => state.login);
   const error = useAuthStore((state) => state.error);
   const isSubmitting = useAuthStore((state) => state.isSubmitting);
@@ -22,6 +23,7 @@ export function LoginScreen() {
   const [email, setEmail] = useState(hasSupabaseConfig ? '' : 'ava.sterling@et-demo.com');
   const [password, setPassword] = useState(hasSupabaseConfig ? '' : 'demo1234');
   const [isResetting, setIsResetting] = useState(false);
+  const compact = width < 420;
 
   function switchVariant(nextVariant: AppRole) {
     setVariant(nextVariant);
@@ -73,13 +75,13 @@ export function LoginScreen() {
       behavior={Platform.select({ ios: 'padding', android: undefined })}
       style={styles.container}
     >
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <View style={styles.hero}>
         <BrandHeader subtitle={variant === 'customer' ? APP_TAGLINE : ADMIN_TAGLINE} />
       </View>
 
-      <View style={styles.formCard}>
-        <View style={styles.variantRow}>
+      <View style={[styles.formCard, compact && styles.formCardCompact]}>
+        <View style={[styles.variantRow, compact && styles.variantRowCompact]}>
           {LOGIN_VARIANTS.map((item) => {
             const active = item === variant;
             return (
@@ -143,12 +145,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   formCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    borderColor: COLORS.border,
+    borderRadius: 24,
+    borderWidth: 1,
     gap: SPACING.md,
-    paddingBottom: SPACING.xxl,
+    padding: SPACING.lg,
+  },
+  formCardCompact: {
+    padding: SPACING.md,
   },
   variantRow: {
     flexDirection: 'row',
     gap: SPACING.sm,
+  },
+  variantRowCompact: {
+    flexDirection: 'column',
   },
   variantChip: {
     backgroundColor: COLORS.surface,
@@ -170,7 +182,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   variantLabelActive: {
-    color: COLORS.primary,
+    color: COLORS.white,
   },
   error: {
     color: COLORS.error,
@@ -184,8 +196,8 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   link: {
-    color: COLORS.textSecondary,
-    fontFamily: FONTS.body,
+    color: COLORS.accent,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 13,
     textAlign: 'center',
   },

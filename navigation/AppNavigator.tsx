@@ -27,7 +27,7 @@ const navTheme = {
   colors: {
     ...DefaultTheme.colors,
     background: COLORS.primary,
-    card: COLORS.primary,
+    card: COLORS.primaryStrong,
     border: COLORS.border,
     primary: COLORS.accent,
     text: COLORS.white,
@@ -40,9 +40,11 @@ function TabsNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: COLORS.accent,
-        tabBarInactiveTintColor: COLORS.textSecondary,
+        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.72)',
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabLabel,
+        tabBarItemStyle: styles.tabItem,
+        tabBarActiveBackgroundColor: 'rgba(195, 0, 47, 0.14)',
       }}
     >
       <Tabs.Screen
@@ -83,9 +85,11 @@ function AdminTabsNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: COLORS.accent,
-        tabBarInactiveTintColor: COLORS.textSecondary,
+        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.72)',
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabLabel,
+        tabBarItemStyle: styles.tabItem,
+        tabBarActiveBackgroundColor: 'rgba(195, 0, 47, 0.14)',
       }}
     >
       <AdminTabs.Screen
@@ -130,7 +134,7 @@ function AuthenticatedStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: COLORS.primary },
+        headerStyle: { backgroundColor: COLORS.primaryStrong },
         headerTintColor: COLORS.white,
         headerTitleStyle: { fontFamily: FONTS.heading, fontSize: 20 },
         contentStyle: { backgroundColor: COLORS.primary },
@@ -196,16 +200,22 @@ export function AppNavigator() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: COLORS.primary,
-    borderTopColor: COLORS.accent,
+    backgroundColor: COLORS.primaryStrong,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
     borderTopWidth: 1,
-    height: 72,
-    paddingBottom: 8,
-    paddingTop: 8,
+    height: 78,
+    paddingBottom: 10,
+    paddingTop: 10,
+  },
+  tabItem: {
+    borderRadius: 14,
+    marginHorizontal: 6,
+    marginVertical: 6,
   },
   tabLabel: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    letterSpacing: 0.4,
   },
   headerAction: {
     color: COLORS.accent,

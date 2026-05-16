@@ -86,14 +86,15 @@ const styles = StyleSheet.create({
     width: 72,
   },
   avatarText: {
-    color: COLORS.primary,
+    color: COLORS.white,
     fontFamily: FONTS.bodyBold,
     fontSize: 24,
   },
   name: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.heading,
     fontSize: 24,
+    textTransform: 'uppercase',
   },
   email: {
     color: COLORS.textSecondary,
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   infoValue: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.bodySemiBold,
     fontSize: 14,
   },

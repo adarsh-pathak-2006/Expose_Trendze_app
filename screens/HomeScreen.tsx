@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -18,6 +18,7 @@ import { formatDateTime } from '../utils/format';
 type Navigation = NativeStackScreenProps<RootStackParamList>['navigation'];
 
 export function HomeScreen() {
+  const { width } = useWindowDimensions();
   const navigation = useNavigation<Navigation>();
   const profile = useAuthStore((state) => state.profile);
   const logout = useAuthStore((state) => state.logout);
@@ -31,12 +32,13 @@ export function HomeScreen() {
   }, [fetchAll]);
 
   const activeOrders = orders.filter((order) => !['Delivered', 'Cancelled'].includes(order.status));
+  const compact = width < 420;
 
   return (
     <ScreenShell onRefresh={fetchAll} refreshing={isLoading}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.welcome}>Welcome back, {profile?.fullName?.split(' ')[0] ?? 'Customer'}</Text>
+      <View style={[styles.header, compact && styles.headerCompact]}>
+        <View style={styles.headerCopy}>
+          <Text style={[styles.welcome, compact && styles.welcomeCompact]}>Welcome back, {profile?.fullName?.split(' ')[0] ?? 'Customer'}</Text>
           <Text style={styles.caption}>Stay close to every order milestone in real time.</Text>
         </View>
         <Pressable onPress={logout}>
@@ -44,12 +46,12 @@ export function HomeScreen() {
         </Pressable>
       </View>
 
-      <View style={styles.statsRow}>
+      <View style={[styles.statsRow, compact && styles.stackOnCompact]}>
         <StatCard label="Active Orders" value={dashboard?.activeOrders ?? 0} />
         <StatCard label="Total Orders" value={dashboard?.totalOrders ?? 0} />
       </View>
 
-      <View style={styles.quickActions}>
+      <View style={[styles.quickActions, compact && styles.stackOnCompact]}>
         <PrimaryButton onPress={() => navigation.navigate('MainTabs', { screen: 'Orders' } as never)} style={styles.actionButton}>
           Order History
         </PrimaryButton>
@@ -98,10 +100,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: SPACING.md,
   },
+  headerCompact: {
+    gap: SPACING.md,
+  },
+  headerCopy: {
+    flex: 1,
+    paddingRight: SPACING.sm,
+  },
   welcome: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.heading,
     fontSize: 28,
+    textTransform: 'uppercase',
+  },
+  welcomeCompact: {
+    fontSize: 24,
   },
   caption: {
     color: COLORS.textSecondary,
@@ -116,6 +129,9 @@ const styles = StyleSheet.create({
   quickActions: {
     flexDirection: 'row',
     gap: SPACING.md,
+  },
+  stackOnCompact: {
+    flexDirection: 'column',
   },
   actionButton: {
     flex: 1,
@@ -147,7 +163,7 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   activityTitle: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.bodySemiBold,
     fontSize: 14,
   },

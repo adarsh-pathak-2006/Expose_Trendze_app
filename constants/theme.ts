@@ -1,17 +1,22 @@
 export const COLORS = {
-  primary: '#1A1A2E',
-  accent: '#C8973A',
-  surface: '#2C2C54',
-  cream: '#F9F6EE',
+  primary: '#FFFFFF',
+  primaryStrong: '#222D35',
+  accent: '#C3002F',
+  accentDark: '#B5002C',
+  surface: '#FFFFFF',
+  surfaceMuted: '#F8F8F8',
+  cream: '#FFF6F7',
   white: '#FFFFFF',
-  textSecondary: '#A0A0A0',
+  textPrimary: '#222D35',
+  textSecondary: '#555C63',
   success: '#27AE60',
   error: '#E74C3C',
   warning: '#F39C12',
   info: '#3498DB',
-  border: 'rgba(200, 151, 58, 0.22)',
-  divider: 'rgba(255, 255, 255, 0.08)',
-  shadow: 'rgba(200, 151, 58, 0.18)',
+  border: 'rgba(34, 45, 53, 0.10)',
+  divider: 'rgba(34, 45, 53, 0.10)',
+  shadow: 'rgba(34, 45, 53, 0.12)',
+  overlay: 'rgba(34, 45, 53, 0.82)',
 } as const;
 
 export const SPACING = {
@@ -26,23 +31,23 @@ export const SPACING = {
 export const RADIUS = {
   sm: 6,
   md: 12,
-  lg: 20,
+  lg: 18,
   full: 9999,
 } as const;
 
 export const FONTS = {
-  heading: 'PlayfairDisplay_700Bold',
-  body: 'Montserrat_400Regular',
-  bodyMedium: 'Montserrat_500Medium',
-  bodySemiBold: 'Montserrat_600SemiBold',
-  bodyBold: 'Montserrat_700Bold',
+  heading: 'Rubik_700Bold',
+  body: 'Rubik_400Regular',
+  bodyMedium: 'Rubik_500Medium',
+  bodySemiBold: 'Rubik_500Medium',
+  bodyBold: 'Rubik_700Bold',
   mono: 'Courier New',
 } as const;
 
 export const SHADOW = {
   shadowColor: COLORS.shadow,
-  shadowOpacity: 0.2,
-  shadowRadius: 18,
-  shadowOffset: { width: 0, height: 8 },
-  elevation: 5,
+  shadowOpacity: 0.18,
+  shadowRadius: 16,
+  shadowOffset: { width: 0, height: 10 },
+  elevation: 4,
 } as const;

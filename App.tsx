@@ -1,11 +1,9 @@
 import { useFonts } from 'expo-font';
 import {
-  Montserrat_400Regular,
-  Montserrat_500Medium,
-  Montserrat_600SemiBold,
-  Montserrat_700Bold,
-} from '@expo-google-fonts/montserrat';
-import { PlayfairDisplay_700Bold } from '@expo-google-fonts/playfair-display';
+  Rubik_400Regular,
+  Rubik_500Medium,
+  Rubik_700Bold,
+} from '@expo-google-fonts/rubik';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -16,11 +14,9 @@ import { useAuthStore } from './store/authStore';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Montserrat_400Regular,
-    Montserrat_500Medium,
-    Montserrat_600SemiBold,
-    Montserrat_700Bold,
-    PlayfairDisplay_700Bold,
+    Rubik_400Regular,
+    Rubik_500Medium,
+    Rubik_700Bold,
   });
 
   useBootstrap();

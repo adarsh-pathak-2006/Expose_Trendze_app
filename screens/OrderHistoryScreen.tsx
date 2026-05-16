@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.body,
     fontSize: 14,
     minHeight: 52,
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   filterLabelActive: {
-    color: COLORS.primary,
+    color: COLORS.white,
   },
   list: {
     gap: SPACING.md,

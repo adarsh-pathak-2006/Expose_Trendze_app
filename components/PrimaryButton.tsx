@@ -2,6 +2,7 @@ import type { PropsWithChildren } from 'react';
 import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 
 import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
+import { AnimatedEntrance } from './AnimatedEntrance';
 
 type Props = PropsWithChildren<{
   onPress?: () => void;
@@ -12,29 +13,31 @@ type Props = PropsWithChildren<{
 
 export function PrimaryButton({ children, onPress, disabled, variant = 'primary', style }: Props) {
   return (
-    <Pressable
-      disabled={disabled}
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.base,
-        variant === 'primary' && styles.primary,
-        variant === 'secondary' && styles.secondary,
-        variant === 'destructive' && styles.destructive,
-        disabled && styles.disabled,
-        pressed && !disabled ? styles.pressed : undefined,
-        style,
-      ]}
-    >
-      <Text
-        style={[
-          styles.label,
-          variant === 'secondary' ? styles.secondaryLabel : styles.primaryLabel,
-          variant === 'destructive' ? styles.destructiveLabel : undefined,
+    <AnimatedEntrance delay={110} distance={12} duration={380} scaleFrom={0.98}>
+      <Pressable
+        disabled={disabled}
+        onPress={onPress}
+        style={({ pressed }) => [
+          styles.base,
+          variant === 'primary' && styles.primary,
+          variant === 'secondary' && styles.secondary,
+          variant === 'destructive' && styles.destructive,
+          disabled && styles.disabled,
+          pressed && !disabled ? styles.pressed : undefined,
+          style,
         ]}
       >
-        {children}
-      </Text>
-    </Pressable>
+        <Text
+          style={[
+            styles.label,
+            variant === 'secondary' ? styles.secondaryLabel : styles.primaryLabel,
+            variant === 'destructive' ? styles.destructiveLabel : undefined,
+          ]}
+        >
+          {children}
+        </Text>
+      </Pressable>
+    </AnimatedEntrance>
   );
 }
 
@@ -51,9 +54,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent,
   },
   secondary: {
-    backgroundColor: 'transparent',
+    backgroundColor: COLORS.surface,
     borderColor: COLORS.accent,
-    borderWidth: 2,
+    borderWidth: 1.5,
   },
   destructive: {
     backgroundColor: COLORS.error,
@@ -69,7 +72,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   primaryLabel: {
-    color: COLORS.primary,
+    color: COLORS.white,
   },
   secondaryLabel: {
     color: COLORS.accent,

@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.md,
   },
   stageTitle: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.bodySemiBold,
     fontSize: 14,
   },

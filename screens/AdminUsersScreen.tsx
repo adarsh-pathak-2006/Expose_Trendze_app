@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ScreenShell } from '../components/ScreenShell';
@@ -35,6 +35,7 @@ const emptyForm: FormState = {
 };
 
 export function AdminUsersScreen() {
+  const { width } = useWindowDimensions();
   const [role, setRole] = useState<AppRole>('customer');
   const [form, setForm] = useState<FormState>(emptyForm);
   const [users, setUsers] = useState<ManagedUser[]>([]);
@@ -195,6 +196,7 @@ export function AdminUsersScreen() {
 
   const customers = useMemo(() => users.filter((user) => user.role === 'customer'), [users]);
   const admins = useMemo(() => users.filter((user) => user.role === 'admin'), [users]);
+  const compact = width < 420;
 
   return (
     <ScreenShell onRefresh={loadUsers} refreshing={isLoading}>
@@ -203,7 +205,7 @@ export function AdminUsersScreen() {
         subtitle="Create, edit, disable, or remove customer and admin accounts from one centralized screen."
       />
 
-      <View style={styles.variantRow}>
+      <View style={[styles.variantRow, compact && styles.stackOnCompact]}>
         {(['customer', 'admin'] as const).map((option) => {
           const active = option === role;
 
@@ -268,7 +270,7 @@ export function AdminUsersScreen() {
           </>
         ) : null}
 
-        <View style={styles.actionRow}>
+        <View style={[styles.actionRow, compact && styles.stackOnCompact]}>
           <PrimaryButton disabled={isSubmitting} onPress={handleSubmit} style={styles.actionButton}>
             {isSubmitting ? 'Saving...' : selectedUser ? 'Save Changes' : role === 'customer' ? 'Create Customer' : 'Create Admin'}
           </PrimaryButton>
@@ -324,9 +326,12 @@ function ManagedUserCard({
   onDelete: () => void;
   isSubmitting: boolean;
 }) {
+  const { width } = useWindowDimensions();
+  const compact = width < 520;
+
   return (
     <View style={[styles.userCard, !user.isActive && styles.userCardMuted]}>
-      <View style={styles.userHeader}>
+      <View style={[styles.userHeader, compact && styles.userHeaderCompact]}>
         <View style={styles.userCopy}>
           <Text style={styles.userName}>{user.fullName}</Text>
           <Text style={styles.userEmail}>{user.email}</Text>
@@ -340,7 +345,7 @@ function ManagedUserCard({
         </View>
       </View>
 
-      <View style={styles.userActions}>
+      <View style={[styles.userActions, compact && styles.stackOnCompact]}>
         <PrimaryButton disabled={isSubmitting} onPress={onEdit} style={styles.userActionButton} variant="secondary">
           Edit
         </PrimaryButton>
@@ -385,7 +390,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   variantLabelActive: {
-    color: COLORS.primary,
+    color: COLORS.white,
   },
   formCard: {
     backgroundColor: COLORS.surface,
@@ -396,13 +401,17 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
   },
   formTitle: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.bodyBold,
     fontSize: 16,
+    textTransform: 'uppercase',
   },
   actionRow: {
     flexDirection: 'row',
     gap: SPACING.md,
+  },
+  stackOnCompact: {
+    flexDirection: 'column',
   },
   actionButton: {
     flex: 1,
@@ -426,12 +435,16 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
     justifyContent: 'space-between',
   },
+  userHeaderCompact: {
+    alignItems: 'flex-start',
+    flexDirection: 'column',
+  },
   userCopy: {
     flex: 1,
     gap: SPACING.xs,
   },
   userName: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.bodySemiBold,
     fontSize: 16,
   },

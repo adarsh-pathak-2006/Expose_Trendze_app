@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -13,12 +13,14 @@ import { useOrdersStore } from '../store/ordersStore';
 import type { RootStackParamList } from '../types/navigation';
 
 export function AdminHomeScreen() {
+  const { width } = useWindowDimensions();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const profile = useAuthStore((state) => state.profile);
   const fetchAll = useOrdersStore((state) => state.fetchAll);
   const orders = useOrdersStore((state) => state.orders);
   const dashboard = useOrdersStore((state) => state.dashboard);
   const isLoading = useOrdersStore((state) => state.isLoading);
+  const compact = width < 420;
 
   useEffect(() => {
     fetchAll();
@@ -31,7 +33,7 @@ export function AdminHomeScreen() {
         <Text style={styles.subtitle}>Welcome, {profile?.fullName ?? 'Admin'}</Text>
       </View>
 
-      <View style={styles.statsRow}>
+      <View style={[styles.statsRow, compact && styles.statsRowCompact]}>
         <StatCard label="Total Orders" value={dashboard?.totalOrders ?? orders.length} />
         <StatCard label="Active Pipelines" value={dashboard?.activeOrders ?? 0} />
       </View>
@@ -61,9 +63,10 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
   },
   title: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.heading,
     fontSize: 28,
+    textTransform: 'uppercase',
   },
   subtitle: {
     color: COLORS.textSecondary,
@@ -73,6 +76,9 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     gap: SPACING.md,
+  },
+  statsRowCompact: {
+    flexDirection: 'column',
   },
   stack: {
     gap: SPACING.md,

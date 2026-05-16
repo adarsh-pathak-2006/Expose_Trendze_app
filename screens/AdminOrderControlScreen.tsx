@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { ScreenShell } from '../components/ScreenShell';
@@ -14,6 +14,7 @@ import { formatDateTime } from '../utils/format';
 type Props = NativeStackScreenProps<RootStackParamList, 'AdminOrderControl'>;
 
 export function AdminOrderControlScreen({ route }: Props) {
+  const { width } = useWindowDimensions();
   const fetchAll = useOrdersStore((state) => state.fetchAll);
   const isLoading = useOrdersStore((state) => state.isLoading);
   const isUpdating = useOrdersStore((state) => state.isUpdating);
@@ -22,6 +23,7 @@ export function AdminOrderControlScreen({ route }: Props) {
 
   const order = useOrdersStore((state) => state.getOrderById(route.params.orderId));
   const [stageNote, setStageNote] = useState('');
+  const compact = width < 420;
 
   useEffect(() => {
     if (!order) {
@@ -85,7 +87,7 @@ export function AdminOrderControlScreen({ route }: Props) {
               disabled={isUpdating}
               key={stage}
               onPress={() => handleStageSelect(stageNumber)}
-              style={[styles.stageRow, active && styles.stageRowActive]}
+              style={[styles.stageRow, active && styles.stageRowActive, compact && styles.stageRowCompact]}
             >
               <View style={styles.stageNumber}>
                 <Text style={[styles.stageNumberText, active && styles.stageNumberTextActive]}>{stageNumber}</Text>
@@ -106,7 +108,7 @@ export function AdminOrderControlScreen({ route }: Props) {
 
 const styles = StyleSheet.create({
   placeholder: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.body,
     fontSize: 14,
     marginTop: SPACING.xl,
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   textArea: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.body,
     fontSize: 14,
     minHeight: 92,
@@ -162,9 +164,12 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
     padding: SPACING.md,
   },
+  stageRowCompact: {
+    alignItems: 'flex-start',
+  },
   stageRowActive: {
     borderColor: COLORS.accent,
-    backgroundColor: 'rgba(200, 151, 58, 0.12)',
+    backgroundColor: 'rgba(195, 0, 47, 0.08)',
   },
   stageNumber: {
     alignItems: 'center',
@@ -188,7 +193,7 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   stageTitle: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.bodySemiBold,
     fontSize: 14,
   },

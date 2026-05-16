@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -15,6 +15,7 @@ import { useOrdersStore } from '../store/ordersStore';
 import type { RootStackParamList } from '../types/navigation';
 
 export function TrackingScreen() {
+  const { width } = useWindowDimensions();
   const route = useRoute<RouteProp<RootStackParamList, 'Tracking'>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const orders = useOrdersStore((state) => state.orders);
@@ -62,11 +63,12 @@ export function TrackingScreen() {
     const completedStages = activeOrder?.stages.filter((stage) => stage.isCompleted) ?? [];
     return completedStages.length ? completedStages[completedStages.length - 1].stageNumber : 1;
   }, [activeOrder?.stages]);
+  const compact = width < 420;
 
   return (
     <ScreenShell>
-      <View style={styles.header}>
-        <Text style={styles.title}>Live Tracking</Text>
+      <View style={[styles.header, compact && styles.headerCompact]}>
+        <Text style={[styles.title, compact && styles.titleCompact]}>Live Tracking</Text>
         <View style={styles.livePill}>
           <View style={[styles.liveDot, { backgroundColor: isLive ? COLORS.accent : COLORS.textSecondary }]} />
           <Text style={styles.liveLabel}>{isLive ? 'Realtime' : 'Preview'}</Text>
@@ -91,7 +93,7 @@ export function TrackingScreen() {
             })}
           </View>
           <View style={styles.timelineCard}>
-            <View style={styles.timelineHeader}>
+            <View style={[styles.timelineHeader, compact && styles.timelineHeaderCompact]}>
               <View style={styles.timelineCopy}>
                 <Text style={styles.timelineTitle}>{activeOrder.orderNumber}</Text>
                 <Text style={styles.timelineSubtitle}>Current stage {currentStageNumber} of 11</Text>
@@ -132,10 +134,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: SPACING.md,
   },
+  headerCompact: {
+    alignItems: 'flex-start',
+    flexDirection: 'column',
+    gap: SPACING.sm,
+  },
   title: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontFamily: FONTS.heading,
     fontSize: 28,
+    textTransform: 'uppercase',
+  },
+  titleCompact: {
+    fontSize: 24,
   },
   livePill: {
     alignItems: 'center',
@@ -181,7 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   orderChipLabelActive: {
-    color: COLORS.primary,
+    color: COLORS.white,
   },
   timelineCard: {
     backgroundColor: COLORS.surface,
@@ -196,6 +207,10 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
     justifyContent: 'space-between',
     marginBottom: SPACING.md,
+  },
+  timelineHeaderCompact: {
+    alignItems: 'flex-start',
+    flexDirection: 'column',
   },
   timelineCopy: {
     flex: 1,
