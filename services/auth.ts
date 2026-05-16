@@ -137,6 +137,10 @@ export async function fetchProfile(expectedRole?: AppRole): Promise<UserProfile>
       throw new Error('This account is registered as an admin, not a customer.');
     }
 
+    if (!adminData.is_active) {
+      throw new Error('This admin account has been disabled. Please contact Expose Trendze.');
+    }
+
     return {
       id: adminData.id,
       userId: adminData.user_id,
@@ -159,6 +163,10 @@ export async function fetchProfile(expectedRole?: AppRole): Promise<UserProfile>
 
   if (expectedRole && expectedRole !== 'customer') {
     throw new Error('This account is registered as a customer, not an admin.');
+  }
+
+  if (!customerData.is_active) {
+    throw new Error('This customer account has been disabled. Please contact Expose Trendze.');
   }
 
   return {

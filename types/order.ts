@@ -21,6 +21,16 @@ export type OrderStage = {
   updatedBy?: string;
 };
 
+export type OrderPricingHistoryEntry = {
+  id: string;
+  previousTotalAmount?: number;
+  newTotalAmount: number;
+  currency: string;
+  changeNote?: string;
+  changedAt: string;
+  changedBy?: string;
+};
+
 export type Order = {
   id: string;
   customerId: string;
@@ -40,6 +50,7 @@ export type Order = {
   };
   items: OrderItem[];
   stages: OrderStage[];
+  pricingHistory: OrderPricingHistoryEntry[];
 };
 
 export type UserProfile = {

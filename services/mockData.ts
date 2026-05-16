@@ -40,6 +40,27 @@ function makeStage(stageNumber: number, completed: boolean, offsetDays: number, 
   };
 }
 
+function makePricingHistory(
+  id: string,
+  newTotalAmount: number,
+  offsetDays: number,
+  options?: {
+    previousTotalAmount?: number;
+    changeNote?: string;
+    changedBy?: string;
+  },
+) {
+  return {
+    id,
+    previousTotalAmount: options?.previousTotalAmount,
+    newTotalAmount,
+    currency: 'USD',
+    changeNote: options?.changeNote,
+    changedAt: new Date(now.getTime() - offsetDays * 24 * 60 * 60 * 1000).toISOString(),
+    changedBy: options?.changedBy,
+  };
+}
+
 export const mockOrders: Order[] = [
   {
     id: 'order-1',
@@ -82,6 +103,17 @@ export const mockOrders: Order[] = [
       makeStage(9, false, 0),
       makeStage(10, false, 0),
       makeStage(11, false, 0),
+    ],
+    pricingHistory: [
+      makePricingHistory('price-1-a', 7980, 18, {
+        changeNote: 'Initial quotation approved before production lock.',
+        changedBy: 'Shan Verma',
+      }),
+      makePricingHistory('price-1-b', 8420, 11, {
+        previousTotalAmount: 7980,
+        changeNote: 'Added premium monogram finishing for the organizer batch.',
+        changedBy: 'Shan Verma',
+      }),
     ],
   },
   {
@@ -126,6 +158,17 @@ export const mockOrders: Order[] = [
       makeStage(10, false, 0),
       makeStage(11, false, 0),
     ],
+    pricingHistory: [
+      makePricingHistory('price-2-a', 4960, 9, {
+        changeNote: 'Original estimate based on one satchel finish.',
+        changedBy: 'Shan Verma',
+      }),
+      makePricingHistory('price-2-b', 5240, 4, {
+        previousTotalAmount: 4960,
+        changeNote: 'Updated after adding a second leather sleeve variation.',
+        changedBy: 'Shan Verma',
+      }),
+    ],
   },
   {
     id: 'order-3',
@@ -156,6 +199,12 @@ export const mockOrders: Order[] = [
       completedAt: new Date(now.getTime() - (32 - index) * 24 * 60 * 60 * 1000).toISOString(),
       stageNote: index === 10 ? 'Consignment received and confirmed by customer.' : undefined,
     })),
+    pricingHistory: [
+      makePricingHistory('price-3-a', 2130, 38, {
+        changeNote: 'Final delivered order total.',
+        changedBy: 'Shan Verma',
+      }),
+    ],
   },
 ];
 

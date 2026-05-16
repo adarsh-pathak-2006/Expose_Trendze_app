@@ -2,7 +2,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 
 import { getDemoOrders, mockDashboardSummary, updateDemoOrderStage } from './mockData';
 import { hasSupabaseConfig, supabase } from './supabase';
-import type { DashboardSummary, Order, OrderStage } from '../types/order';
+import type { DashboardSummary, Order, OrderPricingHistoryEntry, OrderStage } from '../types/order';
 import { ORDER_STAGES } from '../constants/app';
 
 function normalizeStages(stages: any[] | null | undefined): OrderStage[] {
@@ -58,6 +58,23 @@ function normalizeOrder(order: any): Order {
       specifications: item.specifications ?? undefined,
     })),
     stages: normalizeStages(order.order_stages),
+    pricingHistory: ((order.order_pricing_history ?? []) as any[])
+      .map(
+        (entry: any) =>
+          ({
+            id: entry.id,
+            previousTotalAmount:
+              entry.previous_total_amount === null || entry.previous_total_amount === undefined
+                ? undefined
+                : Number(entry.previous_total_amount),
+            newTotalAmount: Number(entry.new_total_amount),
+            currency: entry.currency,
+            changeNote: entry.change_note ?? undefined,
+            changedAt: entry.changed_at,
+            changedBy: entry.changed_by ?? undefined,
+          }) satisfies OrderPricingHistoryEntry,
+      )
+      .sort((a: OrderPricingHistoryEntry, b: OrderPricingHistoryEntry) => b.changedAt.localeCompare(a.changedAt)),
   };
 }
 
@@ -92,7 +109,7 @@ export async function fetchOrders(): Promise<Order[]> {
   const { data, error } = await supabase
     .from('orders')
     .select(
-      'id, customer_id, order_number, status, total_amount, currency, payment_status, expected_delivery, placed_at, updated_at, customers(id, full_name, email, company_name), order_items(*), order_stages(*)',
+      'id, customer_id, order_number, status, total_amount, currency, payment_status, expected_delivery, placed_at, updated_at, customers(id, full_name, email, company_name), order_items(*), order_stages(*), order_pricing_history(*)',
     )
     .order('placed_at', { ascending: false });
 
@@ -111,7 +128,7 @@ export async function fetchOrderById(orderId: string): Promise<Order | undefined
   const { data, error } = await supabase
     .from('orders')
     .select(
-      'id, customer_id, order_number, status, total_amount, currency, payment_status, expected_delivery, placed_at, updated_at, customers(id, full_name, email, company_name), order_items(*), order_stages(*)',
+      'id, customer_id, order_number, status, total_amount, currency, payment_status, expected_delivery, placed_at, updated_at, customers(id, full_name, email, company_name), order_items(*), order_stages(*), order_pricing_history(*)',
     )
     .eq('id', orderId)
     .maybeSingle();

@@ -94,6 +94,22 @@ export function OrderDetailScreen({ navigation, route }: Props) {
       </View>
 
       <View style={styles.section}>
+        <Text style={styles.heading}>Key Dates</Text>
+        <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Order placed</Text>
+          <Text style={styles.summaryValue}>{formatDate(order.placedAt)}</Text>
+        </View>
+        <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Expected delivery</Text>
+          <Text style={styles.summaryValue}>{formatDate(order.expectedDelivery)}</Text>
+        </View>
+        <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Last updated</Text>
+          <Text style={styles.summaryValue}>{formatDate(order.updatedAt ?? order.placedAt)}</Text>
+        </View>
+      </View>
+
+      <View style={styles.section}>
         <Text style={styles.heading}>Summary</Text>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Total order value</Text>
@@ -103,6 +119,31 @@ export function OrderDetailScreen({ navigation, route }: Props) {
           <Text style={styles.summaryLabel}>Payment status</Text>
           <StatusBadge label={order.paymentStatus} />
         </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.heading}>Pricing History</Text>
+        {order.pricingHistory.length ? (
+          order.pricingHistory.map((entry) => (
+            <View key={entry.id} style={styles.timelineRow}>
+              <View style={styles.pricingHeader}>
+                <Text style={styles.timelineName}>{formatCurrency(entry.newTotalAmount, entry.currency)}</Text>
+                <Text style={styles.timelineMeta}>{formatDate(entry.changedAt, 'dd MMM yyyy')}</Text>
+              </View>
+              {entry.previousTotalAmount !== undefined ? (
+                <Text style={styles.timelineMeta}>
+                  Previous total {formatCurrency(entry.previousTotalAmount, entry.currency)}
+                </Text>
+              ) : (
+                <Text style={styles.timelineMeta}>Initial recorded price</Text>
+              )}
+              {entry.changeNote ? <Text style={styles.pricingNote}>{entry.changeNote}</Text> : null}
+              {entry.changedBy ? <Text style={styles.timelineMeta}>Updated by {entry.changedBy}</Text> : null}
+            </View>
+          ))
+        ) : (
+          <Text style={styles.summaryLabel}>No pricing changes have been recorded for this order yet.</Text>
+        )}
       </View>
 
       <PrimaryButton onPress={() => navigation.navigate('Tracking', { orderId: order.id })}>Track This Order</PrimaryButton>
@@ -205,6 +246,11 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
     paddingBottom: SPACING.sm,
   },
+  pricingHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   timelineName: {
     color: COLORS.white,
     fontFamily: FONTS.bodyMedium,
@@ -212,6 +258,11 @@ const styles = StyleSheet.create({
   },
   timelineMeta: {
     color: COLORS.textSecondary,
+    fontFamily: FONTS.body,
+    fontSize: 12,
+  },
+  pricingNote: {
+    color: COLORS.cream,
     fontFamily: FONTS.body,
     fontSize: 12,
   },
