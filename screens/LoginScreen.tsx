@@ -23,7 +23,7 @@ export function LoginScreen() {
   const [email, setEmail] = useState(hasSupabaseConfig ? '' : 'ava.sterling@et-demo.com');
   const [password, setPassword] = useState(hasSupabaseConfig ? '' : 'demo1234');
   const [isResetting, setIsResetting] = useState(false);
-  const compact = width < 420;
+  const compact = width < 520;
 
   function switchVariant(nextVariant: AppRole) {
     setVariant(nextVariant);
@@ -88,7 +88,7 @@ export function LoginScreen() {
               <Pressable
                 key={item}
                 onPress={() => switchVariant(item)}
-                style={[styles.variantChip, active && styles.variantChipActive]}
+                style={[styles.variantChip, compact && styles.variantChipCompact, active && styles.variantChipActive]}
               >
                 <Text style={[styles.variantLabel, active && styles.variantLabelActive]}>
                   {item === 'customer' ? 'Customer Login' : 'Admin Login'}
@@ -145,12 +145,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   formCard: {
+    alignSelf: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderColor: COLORS.border,
     borderRadius: 24,
     borderWidth: 1,
     gap: SPACING.md,
     padding: SPACING.lg,
+    width: '100%',
+    maxWidth: 520,
   },
   formCardCompact: {
     padding: SPACING.md,
@@ -158,18 +161,27 @@ const styles = StyleSheet.create({
   variantRow: {
     flexDirection: 'row',
     gap: SPACING.sm,
+    width: '100%',
   },
   variantRowCompact: {
+    alignItems: 'stretch',
     flexDirection: 'column',
   },
   variantChip: {
+    alignItems: 'center',
     backgroundColor: COLORS.surface,
     borderColor: COLORS.border,
     borderRadius: 999,
     borderWidth: 1,
     flex: 1,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    justifyContent: 'center',
+    minHeight: 56,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm + 2,
+  },
+  variantChipCompact: {
+    flex: 0,
+    width: '100%',
   },
   variantChipActive: {
     backgroundColor: COLORS.accent,
@@ -178,7 +190,8 @@ const styles = StyleSheet.create({
   variantLabel: {
     color: COLORS.textSecondary,
     fontFamily: FONTS.bodySemiBold,
-    fontSize: 12,
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: 'center',
   },
   variantLabelActive: {

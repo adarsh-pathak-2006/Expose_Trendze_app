@@ -196,7 +196,8 @@ export function AdminUsersScreen() {
 
   const customers = useMemo(() => users.filter((user) => user.role === 'customer'), [users]);
   const admins = useMemo(() => users.filter((user) => user.role === 'admin'), [users]);
-  const compact = width < 420;
+  const compact = width < 520;
+  const stackActions = width < 560;
 
   return (
     <ScreenShell onRefresh={loadUsers} refreshing={isLoading}>
@@ -270,7 +271,7 @@ export function AdminUsersScreen() {
           </>
         ) : null}
 
-        <View style={[styles.actionRow, compact && styles.stackOnCompact]}>
+        <View style={[styles.actionRow, stackActions && styles.stackOnCompact]}>
           <PrimaryButton disabled={isSubmitting} onPress={handleSubmit} style={styles.actionButton}>
             {isSubmitting ? 'Saving...' : selectedUser ? 'Save Changes' : role === 'customer' ? 'Create Customer' : 'Create Admin'}
           </PrimaryButton>
@@ -371,13 +372,16 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   variantChip: {
+    alignItems: 'center',
     backgroundColor: COLORS.surface,
     borderColor: COLORS.border,
     borderRadius: RADIUS.full,
     borderWidth: 1,
     flex: 1,
+    justifyContent: 'center',
+    minHeight: 52,
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.sm + 2,
   },
   variantChipActive: {
     backgroundColor: COLORS.accent,
@@ -415,6 +419,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
+    minWidth: 0,
   },
   listStack: {
     gap: SPACING.md,
@@ -464,6 +469,7 @@ const styles = StyleSheet.create({
   },
   userActionButton: {
     flex: 1,
+    minWidth: 0,
   },
   statusPill: {
     alignSelf: 'flex-start',

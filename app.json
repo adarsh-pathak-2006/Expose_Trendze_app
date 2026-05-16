@@ -21,10 +21,16 @@
         "backgroundColor": "#1A1A2E"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.adarsh0001.exposetrendzeapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ae34219a-493e-4e4a-adfa-706399b45ae9"
+      }
     }
   }
 }

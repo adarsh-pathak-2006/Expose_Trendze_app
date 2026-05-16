@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     flex: 1,
     gap: SPACING.sm,
+    minHeight: 116,
     padding: SPACING.md,
     ...SHADOW,
   },

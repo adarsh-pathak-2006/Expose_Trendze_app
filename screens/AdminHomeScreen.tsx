@@ -20,7 +20,7 @@ export function AdminHomeScreen() {
   const orders = useOrdersStore((state) => state.orders);
   const dashboard = useOrdersStore((state) => state.dashboard);
   const isLoading = useOrdersStore((state) => state.isLoading);
-  const compact = width < 420;
+  const compact = width < 520;
 
   useEffect(() => {
     fetchAll();

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -16,6 +16,7 @@ import type { RootStackParamList } from '../types/navigation';
 type Navigation = NativeStackScreenProps<RootStackParamList>['navigation'];
 
 export function OrderHistoryScreen() {
+  const { width } = useWindowDimensions();
   const navigation = useNavigation<Navigation>();
   const fetchAll = useOrdersStore((state) => state.fetchAll);
   const orders = useOrdersStore((state) => state.orders);
@@ -23,6 +24,7 @@ export function OrderHistoryScreen() {
 
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<OrderFilter>('All');
+  const compact = width < 520;
 
   useEffect(() => {
     if (!orders.length) {
@@ -68,14 +70,14 @@ export function OrderHistoryScreen() {
         value={query}
       />
 
-      <View style={styles.filterRow}>
+      <View style={[styles.filterRow, compact && styles.filterRowCompact]}>
         {ORDER_STATUS_FILTERS.map((option) => {
           const active = filter === option;
           return (
             <Pressable
               key={option}
               onPress={() => setFilter(option)}
-              style={[styles.filterChip, active && styles.filterChipActive]}
+              style={[styles.filterChip, compact && styles.filterChipCompact, active && styles.filterChipActive]}
             >
               <Text style={[styles.filterLabel, active && styles.filterLabelActive]}>{option}</Text>
             </Pressable>
@@ -117,13 +119,22 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: SPACING.sm,
   },
+  filterRowCompact: {
+    flexDirection: 'column',
+  },
   filterChip: {
+    alignItems: 'center',
     backgroundColor: COLORS.surface,
     borderColor: COLORS.border,
     borderRadius: RADIUS.full,
     borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 44,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
+  },
+  filterChipCompact: {
+    width: '100%',
   },
   filterChipActive: {
     backgroundColor: COLORS.accent,

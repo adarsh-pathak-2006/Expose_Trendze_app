@@ -23,7 +23,7 @@ export function AdminOrderControlScreen({ route }: Props) {
 
   const order = useOrdersStore((state) => state.getOrderById(route.params.orderId));
   const [stageNote, setStageNote] = useState('');
-  const compact = width < 420;
+  const compact = width < 520;
 
   useEffect(() => {
     if (!order) {
@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     gap: SPACING.md,
+    minHeight: 72,
     padding: SPACING.md,
   },
   stageRowCompact: {

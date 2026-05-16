@@ -32,7 +32,7 @@ export function HomeScreen() {
   }, [fetchAll]);
 
   const activeOrders = orders.filter((order) => !['Delivered', 'Cancelled'].includes(order.status));
-  const compact = width < 420;
+  const compact = width < 520;
 
   return (
     <ScreenShell onRefresh={fetchAll} refreshing={isLoading}>
@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
+    minWidth: 0,
   },
   stack: {
     gap: SPACING.md,

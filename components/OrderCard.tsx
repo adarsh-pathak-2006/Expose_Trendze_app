@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     gap: SPACING.md,
-    padding: SPACING.md,
+    padding: SPACING.md + 2,
   },
   headerRow: {
     flexDirection: 'row',
@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
   footerRow: {
     alignItems: 'center',
     flexDirection: 'row',
+    gap: SPACING.sm,
     justifyContent: 'space-between',
   },
   footerRowCompact: {

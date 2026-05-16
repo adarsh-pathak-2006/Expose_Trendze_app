@@ -48,12 +48,14 @@ export function ProfileScreen() {
         <InfoRow label="App Version" value={APP_VERSION} />
       </View>
 
-      <PrimaryButton onPress={contactSupport} variant="secondary">
-        Contact Support
-      </PrimaryButton>
-      <PrimaryButton onPress={logout} variant="destructive">
-        Logout
-      </PrimaryButton>
+      <View style={styles.actionStack}>
+        <PrimaryButton onPress={contactSupport} variant="secondary">
+          Contact Support
+        </PrimaryButton>
+        <PrimaryButton onPress={logout} variant="destructive">
+          Logout
+        </PrimaryButton>
+      </View>
     </ScreenShell>
   );
 }
@@ -107,6 +109,9 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     borderWidth: 1,
     padding: SPACING.md,
+  },
+  actionStack: {
+    gap: SPACING.md,
   },
   infoRow: {
     borderBottomColor: COLORS.divider,

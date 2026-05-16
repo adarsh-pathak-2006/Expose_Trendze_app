@@ -37,13 +37,23 @@ export function ScreenShell({
         onRefresh ? <RefreshControl tintColor={COLORS.accent} refreshing={refreshing} onRefresh={onRefresh} /> : undefined
       }
     >
-      <AnimatedEntrance delay={30} distance={10} duration={420} style={{ alignSelf: 'center', maxWidth: constrainedWidth }}>
+      <AnimatedEntrance
+        delay={30}
+        distance={10}
+        duration={420}
+        style={{ alignSelf: 'center', maxWidth: constrainedWidth, width: '100%' }}
+      >
         {children}
       </AnimatedEntrance>
     </ScrollView>
   ) : (
     <View style={[styles.staticContent, { paddingHorizontal: horizontalPadding }]}>
-      <AnimatedEntrance delay={30} distance={10} duration={420} style={{ alignSelf: 'center', maxWidth: constrainedWidth }}>
+      <AnimatedEntrance
+        delay={30}
+        distance={10}
+        duration={420}
+        style={{ alignSelf: 'center', maxWidth: constrainedWidth, width: '100%' }}
+      >
         {children}
       </AnimatedEntrance>
     </View>
@@ -67,12 +77,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    alignItems: 'stretch',
     paddingBottom: SPACING.xxl,
     paddingTop: SPACING.md,
     gap: SPACING.lg,
     width: '100%',
   },
   staticContent: {
+    alignItems: 'stretch',
     flex: 1,
     paddingBottom: SPACING.xxl,
     paddingTop: SPACING.md,

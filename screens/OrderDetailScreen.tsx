@@ -19,7 +19,7 @@ export function OrderDetailScreen({ navigation, route }: Props) {
   const orderFromStore = useOrdersStore((state) => state.getOrderById(route.params.orderId));
   const [order, setOrder] = useState<Order | undefined>(orderFromStore);
   const [isLoading, setIsLoading] = useState(!orderFromStore);
-  const compact = width < 420;
+  const compact = width < 520;
 
   useEffect(() => {
     setOrder(orderFromStore);
@@ -87,7 +87,7 @@ export function OrderDetailScreen({ navigation, route }: Props) {
             <View style={styles.lineItemCopy}>
               <Text style={styles.lineItemName}>{item.productName}</Text>
               <Text style={styles.lineItemMeta}>
-                Qty {item.quantity} • {formatCurrency(item.unitPrice, order.currency)} / unit
+                Qty {item.quantity} - {formatCurrency(item.unitPrice, order.currency)} / unit
               </Text>
             </View>
             <Text style={styles.lineItemTotal}>{formatCurrency(item.totalPrice, order.currency)}</Text>
@@ -228,6 +228,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   lineItemTotal: {
+    alignSelf: 'flex-start',
     color: COLORS.accent,
     fontFamily: FONTS.bodyBold,
     fontSize: 13,

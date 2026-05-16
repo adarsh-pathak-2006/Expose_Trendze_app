@@ -63,7 +63,7 @@ export function TrackingScreen() {
     const completedStages = activeOrder?.stages.filter((stage) => stage.isCompleted) ?? [];
     return completedStages.length ? completedStages[completedStages.length - 1].stageNumber : 1;
   }, [activeOrder?.stages]);
-  const compact = width < 420;
+  const compact = width < 520;
 
   return (
     <ScreenShell>
@@ -175,10 +175,13 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   orderChip: {
+    alignItems: 'center',
     backgroundColor: COLORS.surface,
     borderColor: COLORS.border,
     borderRadius: RADIUS.full,
     borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 44,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
   },

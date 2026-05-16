@@ -46,9 +46,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: RADIUS.md,
     justifyContent: 'center',
-    minHeight: 48,
+    minHeight: 54,
+    paddingVertical: SPACING.sm + 2,
     paddingHorizontal: SPACING.lg,
     transform: [{ scale: 1 }],
+    width: '100%',
   },
   primary: {
     backgroundColor: COLORS.accent,
@@ -70,6 +72,8 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: FONTS.bodyBold,
     fontSize: 15,
+    lineHeight: 20,
+    textAlign: 'center',
   },
   primaryLabel: {
     color: COLORS.white,
